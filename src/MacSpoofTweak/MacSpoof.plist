@@ -1,0 +1,11 @@
+{
+	Filter = {
+		Executables = (
+			wifid,
+		);
+		Bundles = (
+			"com.apple.framework.WiFiKit",
+			"com.apple.Preferences",
+		);
+	};
+}
