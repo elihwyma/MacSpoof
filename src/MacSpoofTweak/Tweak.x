@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #include <dlfcn.h>
 
-NSString *macWeGoingFor = @"c6:a0:2f:34:9d:e3";
+NSString *macWeGoingFor = @"be:bf:55:30:75:90";
 
 %hook WFNetworkListRandomMACManager 
 

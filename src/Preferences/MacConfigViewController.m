@@ -1,15 +1,11 @@
-#import "WiFiNetworkViewController.h"
 #import "MacConfigViewController.h"
 
-@implementation WiFiNetworkViewController
+@implementation MacConfigViewController
 @end
 
-@implementation WiFiNetworkViewController (Delegates)
+@implementation MacConfigViewController (Delegates)
 
 -(void)viewDidLoad {
-    WifiManager *wifiManager = [[WifiManager alloc] init];
-    self.ssid = [wifiManager networks];
-
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
 	[self.view addSubview:self.tableView];
 	
@@ -24,21 +20,13 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"Cell"];
-    cell.textLabel.text = self.ssid[indexPath.row];
-	cell.detailTextLabel.text = @"test";
-	cell.accessoryType = 1;
+	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"];
+    cell.textLabel.text = @"MAC";
 	return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[tableView deselectRowAtIndexPath: indexPath animated: true];
-	MacConfigViewController *configVC = [[MacConfigViewController alloc] init];
-	[self.navigationController pushViewController: configVC animated: true];
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return self.ssid.count;
+	return 2;
 }
 
 @end
