@@ -1,13 +1,13 @@
 export ARCHS = arm64 arm64e
 export TARGET = iphone:clang:13.3:14.0
-export THEOS_DEVICE_IP = 127.0.0.1
-export THEOS_DEVICE_PORT = 2222
+export THEOS_DEVICE_IP = 192.168.0.111
+export THEOS_DEVICE_PORT = 22
 
 INSTALL_TARGET_PROCESSES = Preferences
 PACKAGE_VERSION = $(THEOS_PACKAGE_BASE_VERSION)
 
 include $(THEOS)/makefiles/common.mk
-SUBPROJECTS += src/MacSpoofTweak src/Preferences
+SUBPROJECTS += src/Tweak src/Preferences
 include $(THEOS_MAKE_PATH)/aggregate.mk
 
 purge::

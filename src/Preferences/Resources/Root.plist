@@ -6,6 +6,28 @@
 	<array>
 		<dict>
 			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Settings</string>
+			<key>footerText</key>
+			<string>To apply new MAC Address, toggle Private Address for the Network in Wi-Fi Settings</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>com.amywhile.macspoof</string>
+			<key>key</key>
+			<string>GlobalEnable</string>
+			<key>label</key>
+			<string>Tweak Enbaled</string>
+			<key>PostNotification</key>
+			<string>com.amywhile.macspoof.update</string>
+		</dict>
+		<dict>
+			<key>cell</key>
 			<string>PSLinkCell</string>
 			<key>detail</key>
 			<string>WiFiNetworkViewController</string>
