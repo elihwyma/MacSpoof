@@ -1,9 +1,9 @@
 Package: com.amywhile.macspoof
 Name: MacSpoof
-Version: 0.0.1
+Version: 0.2
 Architecture: iphoneos-arm
-Description: An awesome MobileSubstrate tweak!
+Description: Spoof Mac Address on iOS
 Maintainer: Amy While
 Author: Amy While
 Section: Tweaks
-Depends: mobilesubstrate (>= 0.9.5000)
+Depends: mobilesubstrate (>= 0.9.5000), preferenceloader, firmware(>=14.0)

@@ -13,6 +13,36 @@
     return YES;
 }
 
+-(NSString *)randomMac {
+	return [NSString stringWithFormat:@"%02X:%02X:%02X:%02X:%02X:%02X", (arc4random() % 255), (arc4random() % 255), (arc4random() % 255), (arc4random() % 255), (arc4random() % 255), (arc4random() % 255)];
+}
+
+-(void)submitMacAddress:(NSString *)lowerCased ssid:(NSString *)ssid {
+	NSDictionary *configDict = [self.defaults dictionaryForKey: @"NetworksConfig"] ?: [[NSDictionary alloc] init];
+	NSMutableDictionary *config = [[NSMutableDictionary alloc] init];
+	for (id key in configDict.allKeys) {
+		[config setObject: configDict[key] forKey: key];
+	}
+	if ([self isValidMacAddress: lowerCased]) {
+		NSDictionary *ssidConfigDict = config[ssid] ?: [[NSDictionary alloc] init];
+		NSMutableDictionary *ssidConfig = [[NSMutableDictionary alloc] init];
+		for (id key in ssidConfigDict.allKeys) {
+			[ssidConfig setObject: ssidConfigDict[key] forKey: key];
+		}
+		[ssidConfig setValue: lowerCased forKey: @"Address"];
+		[config setValue: ssidConfig forKey: ssid];
+		[self.defaults setObject:config forKey: @"NetworksConfig"];
+		[self.defaults synchronize];
+		[self.tableView reloadData];
+		CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), prefsNoti, NULL, NULL, YES);
+		CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), forceReload, NULL, NULL, YES);
+		return;
+	} else {
+		[self presentErrorAlert: lowerCased ssid: ssid];
+		return;
+	}
+}
+
 -(void)presentErrorAlert:(NSString *)invalidMac ssid:(NSString *)ssid {
 	NSString *message = [NSString stringWithFormat:@"The Mac Address %@ is invalid", invalidMac];
 	UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Invalid Mac Address" message:message preferredStyle:UIAlertControllerStyleAlert];
@@ -39,29 +69,18 @@
 			textField.text = ([config objectForKey: ssid])[@"Address"];
 		}
 	}];
+	UIAlertAction *randomAction = [UIAlertAction actionWithTitle:@"Random" style:UIAlertActionStyleDefault handler:^(UIAlertAction *alertAction) {
+		NSString *lowerCased = [[self randomMac]lowercaseString];
+		[self submitMacAddress: lowerCased ssid:ssid];
+	}];
 	UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Confirm" style:UIAlertActionStyleDefault handler:^(UIAlertAction *alertAction) {
 		UITextField *mac = alertController.textFields.firstObject;
 		NSString *lowerCased = [mac.text lowercaseString];
-		if ([self isValidMacAddress: lowerCased]) {
-			NSDictionary *ssidConfigDict = config[ssid] ?: [[NSDictionary alloc] init];
-			NSMutableDictionary *ssidConfig = [[NSMutableDictionary alloc] init];
-			for (id key in ssidConfigDict.allKeys) {
-				[ssidConfig setObject: ssidConfigDict[key] forKey: key];
-			}
-			[ssidConfig setValue: lowerCased forKey: @"Address"];
-			[config setValue: ssidConfig forKey: ssid];
-			[self.defaults setObject:config forKey: @"NetworksConfig"];
-			[self.defaults synchronize];
-			[self.tableView reloadData];
-			CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), prefsNoti, NULL, NULL, YES);
-			return;
-		} else {
-			[self presentErrorAlert: lowerCased ssid: ssid];
-			return;
-		}
+		[self submitMacAddress: lowerCased ssid:ssid];
 	}];
 	UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
 	[alertController addAction:okAction];
+	[alertController addAction:randomAction];
 	[alertController addAction:cancelAction];
 	[self presentViewController:alertController animated:YES completion:nil];
 }

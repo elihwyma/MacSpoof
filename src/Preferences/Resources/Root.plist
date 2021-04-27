@@ -22,7 +22,7 @@
 			<key>key</key>
 			<string>GlobalEnable</string>
 			<key>label</key>
-			<string>Tweak Enbaled</string>
+			<string>Tweak Enabled</string>
 			<key>PostNotification</key>
 			<string>com.amywhile.macspoof.update</string>
 		</dict>

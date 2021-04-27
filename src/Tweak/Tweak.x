@@ -6,7 +6,6 @@ NSDictionary *config;
 %hook WFNetworkListRandomMACManager 
 
 -(void)setRandomMAC:(id)arg1 forNetwork:(id)arg2 enabled:(BOOL)arg3 shouldAlwaysDisplayRandomAddress:(BOOL)arg4 {
-	NSLog(@"[MacSpoof] setRandomMacAddress WFNetworkListRandomMACManager %@", config[arg2][@"Address"]);
 	if (tweakEnabled) {
 		if (config[arg2][@"Address"]) {
 			%orig(config[arg2][@"Address"], arg2, arg3, arg4);
@@ -20,7 +19,6 @@ NSDictionary *config;
 %hook WFClient
 
 -(void)setEnableRandomMACForNetwork:(id)arg1 enable:(BOOL)arg2 randomMAC:(id)arg3 {
-	NSLog(@"[MacSpoof] setEnableRandomMACForNetwork WFClient %@", config[arg1][@"Address"]);
 	if (tweakEnabled) {
 		if (config[arg1][@"Address"]) {
 			%orig(arg1, arg2, config[arg1][@"Address"]);
@@ -34,7 +32,6 @@ NSDictionary *config;
 %hook WFNetworkScanRecord 
 
 -(NSString *)randomMACAddress {
-	NSLog(@"[MacSpoof] randomMacAddres WFNetworkScanRecord %@", config[self.ssid][@"Address"]);
 	if (tweakEnabled) {
 		if (config[self.ssid][@"Address"]) {
 			return config[self.ssid][@"Address"];
@@ -45,24 +42,36 @@ NSDictionary *config;
 
 %end
 
-%hook WFInterface 
-
--(void)_updateCurrentNetworkWithNetwork:(WiFiNetworkRef)arg1 forceUpdateNetwork:(BOOL)arg2 callback:(/*^block*/id)arg3 userInfo:(id)arg4 {
-	NSLog(@"[MacSpoof] userInfo = %@", arg4);
-	%orig;
+void forceReload() {
+	BOOL shouldToggle = false;
+	for (id ssid in config.allKeys) {
+		if (config[ssid][@"Address"]) {
+			[[%c(WFClient) sharedInstance] setEnableRandomMACForNetwork:ssid enable: NO randomMAC: (config[ssid][@"Address"])];
+			[[%c(WFClient) sharedInstance] setEnableRandomMACForNetwork:ssid enable: YES randomMAC: (config[ssid][@"Address"])];
+			shouldToggle = true;
+		}
+	}
+	if (!shouldToggle) {
+		return;
+	}
+	NSTask *task = [[NSTask alloc] init];
+	[task setLaunchPath:@"/usr/bin/killall"];
+	[task setArguments:@[@"/usr/bin/killall", @"wifid" ]];
+	[task launch];
 }
 
-%end
 void reloadPrefs() {
-    NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:plistPath] ?: [NSDictionary dictionary];
+    NSUserDefaults *dict = [[NSUserDefaults alloc] initWithSuiteName: @"com.amywhile.macspoof"];
     tweakEnabled = [[dict objectForKey:@"GlobalEnable"] ?: @YES boolValue];
-	config = dict[@"NetworksConfig"] ?: [[NSDictionary alloc] init];
-	NSLog(@"[MacSpoof] Prefs have loaded");
+	config = [dict objectForKey:@"NetworksConfig"] ?: [[NSDictionary alloc] init];
+	NSLog(@"[MacSpoof] TweakEnabled: %d, Config = %@", tweakEnabled, config);
+	
 }
 
 %ctor {
 	reloadPrefs();
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)reloadPrefs, prefsNoti, NULL, CFNotificationSuspensionBehaviorCoalesce);
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)forceReload, forceReloadNoti, NULL, CFNotificationSuspensionBehaviorCoalesce);
 	dlopen("/System/Library/PrivateFrameworks/WiFiKit.framework/WiFiKit", RTLD_LAZY);
 	%init;
 }
