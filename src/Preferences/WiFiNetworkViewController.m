@@ -13,7 +13,6 @@
     return YES;
 }
 
-
 -(void)presentErrorAlert:(NSString *)invalidMac ssid:(NSString *)ssid {
 	NSString *message = [NSString stringWithFormat:@"The Mac Address %@ is invalid", invalidMac];
 	UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Invalid Mac Address" message:message preferredStyle:UIAlertControllerStyleAlert];

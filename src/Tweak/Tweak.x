@@ -6,6 +6,7 @@ NSDictionary *config;
 %hook WFNetworkListRandomMACManager 
 
 -(void)setRandomMAC:(id)arg1 forNetwork:(id)arg2 enabled:(BOOL)arg3 shouldAlwaysDisplayRandomAddress:(BOOL)arg4 {
+	NSLog(@"[MacSpoof] setRandomMacAddress WFNetworkListRandomMACManager %@", config[arg2][@"Address"]);
 	if (tweakEnabled) {
 		if (config[arg2][@"Address"]) {
 			%orig(config[arg2][@"Address"], arg2, arg3, arg4);
@@ -19,6 +20,7 @@ NSDictionary *config;
 %hook WFClient
 
 -(void)setEnableRandomMACForNetwork:(id)arg1 enable:(BOOL)arg2 randomMAC:(id)arg3 {
+	NSLog(@"[MacSpoof] setEnableRandomMACForNetwork WFClient %@", config[arg1][@"Address"]);
 	if (tweakEnabled) {
 		if (config[arg1][@"Address"]) {
 			%orig(arg1, arg2, config[arg1][@"Address"]);
@@ -32,6 +34,7 @@ NSDictionary *config;
 %hook WFNetworkScanRecord 
 
 -(NSString *)randomMACAddress {
+	NSLog(@"[MacSpoof] randomMacAddres WFNetworkScanRecord %@", config[self.ssid][@"Address"]);
 	if (tweakEnabled) {
 		if (config[self.ssid][@"Address"]) {
 			return config[self.ssid][@"Address"];
@@ -41,29 +44,6 @@ NSDictionary *config;
 }
 
 %end
-/*
-%hook WFDetailContextPrivateAddressConfig 
-
--(NSString *)randomMACAddress { 
-	if (tweakEnabled) {
-		if (config[self.ssid][@"Address"]) {
-			return config[self.ssid][@"Address"];
-		}
-	} 
-	return %orig;
-}
-
--(id)initWithRandomMACAddress:(id)arg1 hardwareMACAddress:(id)arg2 randomMACSwitchOn:(BOOL)arg3 randomMACFeatureEnabled:(BOOL)arg4 randomMACAddressConfigurable:(BOOL)arg5 enabledForSecureNetworks:(BOOL)arg6 randomMACAddressDisabled:(BOOL)arg7 connectedWithHardwareAddress:(BOOL)arg8 {
-	if (tweakEnabled) {
-		if (config[self.ssid][@"Address"]) {
-			return %orig(config[self.ssid][@"Address"], arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-		}
-	} 
-	return %orig;
-}
-
-%end
-*/
 
 %hook WFInterface 
 
