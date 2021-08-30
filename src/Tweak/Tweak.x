@@ -8,7 +8,7 @@ NSDictionary *config;
 -(void)setRandomMAC:(id)arg1 forNetwork:(id)arg2 enabled:(BOOL)arg3 shouldAlwaysDisplayRandomAddress:(BOOL)arg4 {
 	if (tweakEnabled) {
 		if (config[arg2][@"Address"]) {
-			%orig(config[arg2][@"Address"], arg2, arg3, arg4);
+			return %orig(config[arg2][@"Address"], arg2, arg3, arg4);
 		}
 	} 
 	return %orig;
@@ -21,7 +21,7 @@ NSDictionary *config;
 -(void)setEnableRandomMACForNetwork:(id)arg1 enable:(BOOL)arg2 randomMAC:(id)arg3 {
 	if (tweakEnabled) {
 		if (config[arg1][@"Address"]) {
-			%orig(arg1, arg2, config[arg1][@"Address"]);
+			return %orig(arg1, arg2, config[arg1][@"Address"]);
 		}
 	} 
 	return %orig;
