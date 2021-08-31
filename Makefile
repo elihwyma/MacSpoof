@@ -1,6 +1,6 @@
 export ARCHS = arm64 arm64e
 export TARGET = iphone:clang:13.3:14.0
-export THEOS_DEVICE_IP = 192.168.0.121
+export THEOS_DEVICE_IP = 192.168.0.43
 export THEOS_DEVICE_PORT = 22
 
 INSTALL_TARGET_PROCESSES = Preferences
